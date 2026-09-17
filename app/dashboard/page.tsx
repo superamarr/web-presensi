@@ -8,10 +8,13 @@ type Row = Participant & { scanned_at: string | null; status: string };
 export default function Dashboard() {
   const [rows, setRows] = useState<Row[]>([]);
   const [feed, setFeed] = useState<{ name: string; origin: string | null; time: string }[]>([]);
+  const [err, setErr] = useState("");
 
   async function load() {
-    const { data: participants } = await supabase.from("participants").select("*").order("name");
-    const { data: attendances } = await supabase.from("attendances").select("participant_id, scanned_at, status, participants(name, origin)");
+    const { data: participants, error: e1 } = await supabase.from("participants").select("*").order("name");
+    const { data: attendances, error: e2 } = await supabase.from("attendances").select("participant_id, scanned_at, status, participants(name, origin)");
+    if (e1 || e2) { setErr((e1 || e2)?.message || "Gagal fetch"); return; }
+    setErr("");
     const attMap = new Map<string, { scanned_at: string; status: string }>();
     (attendances as unknown as { participant_id: string; scanned_at: string; status: string }[] | null)?.forEach((a) => attMap.set(a.participant_id, { scanned_at: a.scanned_at, status: a.status }));
     const merged: Row[] = ((participants as Participant[]) || []).map((p) => ({
@@ -78,6 +81,7 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
+      {err && <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-3 text-sm"><b>Gagal konek Supabase:</b> {err}<br/><span className="text-xs">Cek .env.local & rebuild, Vercel Env Vars, supabase-setup.sql, adblock.</span></div>}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white border border-blue-100 rounded-2xl p-4 text-center">
           <div className="text-2xl font-bold text-blue-900">{total}</div><div className="text-xs text-blue-600/60">Total Peserta</div>

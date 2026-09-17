@@ -12,10 +12,12 @@ export default function ParticipantsPage() {
   const [origin, setOrigin] = useState("");
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
 
   async function load() {
-    const { data } = await supabase.from("participants").select("*").order("created_at", { ascending: false });
-    if (data) setList(data as Participant[]);
+    const { data, error } = await supabase.from("participants").select("*").order("created_at", { ascending: false });
+    if (error) setErr(error.message);
+    else { setErr(""); if (data) setList(data as Participant[]); }
   }
   useEffect(() => { load(); }, []);
 
@@ -59,6 +61,7 @@ export default function ParticipantsPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
+      {err && <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-3 text-sm"><b>Gagal konek Supabase:</b> {err}<br/><span className="text-xs">Cek: 1) .env.local ada & rebuild (`Remove-Item .next; npm run build`), 2) Vercel Env Vars ter-set & redeploy, 3) jalankan supabase-setup.sql, 4) matikan adblock.</span></div>}
       <form onSubmit={add} className="bg-white rounded-2xl p-5 border border-blue-100 space-y-3">
         <h2 className="font-semibold text-blue-900">Tambah Peserta</h2>
         <div className="grid sm:grid-cols-3 gap-3">
