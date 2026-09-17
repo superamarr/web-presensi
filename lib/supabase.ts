@@ -1,11 +1,22 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-// ponytail: placeholder so `next build` doesn't crash when env belum di-set di Vercel/build
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-export const supabase = createClient(
-  url || "https://placeholder.supabase.co",
-  key || "placeholder-key"
-);
+// ponytail: lazy so `next build` never calls createClient at import-time (prerender would throw "supabaseUrl is required")
+let _client: SupabaseClient | null = null;
+function getClient(): SupabaseClient {
+  if (_client) return _client;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  return (_client = createClient(
+    url || "https://placeholder.supabase.co",
+    key || "placeholder-key"
+  ));
+}
+export const supabase: SupabaseClient = new Proxy({} as SupabaseClient, {
+  get(_t, prop: string | symbol) {
+    const c = getClient() as unknown as Record<string | symbol, unknown>;
+    return c[prop];
+  },
+}) as SupabaseClient;
 
-// ponytail: single client instance, no factory needed. Add auth/RLS when needed.
+export const isSupabaseConfigured = () =>
+  !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
