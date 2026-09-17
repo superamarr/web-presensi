@@ -20,10 +20,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-blue-50/30">
+    <html lang="id" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased overflow-x-hidden`}>
+      <body className="min-h-full flex flex-col bg-blue-50/30 overflow-x-hidden max-w-full">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 overflow-x-hidden max-w-full w-full">{children}</main>
       </body>
     </html>
   );

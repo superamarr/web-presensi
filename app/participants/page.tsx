@@ -60,8 +60,8 @@ export default function ParticipantsPage() {
   const filtered = list.filter((p) => !q || p.name.toLowerCase().includes(q.toLowerCase()) || (p.origin && p.origin.toLowerCase().includes(q.toLowerCase())) || p.qr_token.includes(q));
 
   return (
-    <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
-      {err && <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-3 text-sm"><b>Gagal konek Supabase:</b> {err}<br/><span className="text-xs">Cek: 1) .env.local ada & rebuild (`Remove-Item .next; npm run build`), 2) Vercel Env Vars ter-set & redeploy, 3) jalankan supabase-setup.sql, 4) matikan adblock.</span></div>}
+    <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6 w-full max-w-full sm:max-w-5xl overflow-x-hidden">
+      {err && <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-3 text-sm break-words"><b>Gagal konek Supabase:</b> {err}<br/><span className="text-xs break-words">Cek: 1) .env.local ada & restart dev (`taskkill /F /IM node.exe; Remove-Item .next -Force; npm run dev`), 2) Vercel Env Vars ter-set & redeploy Clear cache, 3) jalankan supabase-setup.sql, 4) matikan adblock.</span></div>}
       <form onSubmit={add} className="bg-white rounded-2xl p-5 border border-blue-100 space-y-3">
         <h2 className="font-semibold text-blue-900">Tambah Peserta</h2>
         <div className="grid sm:grid-cols-3 gap-3">
